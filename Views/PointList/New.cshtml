@@ -1,0 +1,53 @@
+﻿@model StudyPoints.Models.PointListViewModels
+
+@{
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ポイント登録</h2>
+
+@using (Html.BeginForm("Insert", "PointList"))
+{
+    @Html.AntiForgeryToken();
+    <div class="form-group" id="select-point-item">
+        @Html.LabelFor(m => m.PointList.PointItemName)
+        @Html.DropDownListFor(m => m.PointList.PointItemId, new SelectList(Model.PointItems, "Id", "Name"), "項目を選んでください", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.PointList.Points)
+        @Html.TextBoxFor(m => m.PointList.Points, new { @class = "form-control", @id = "point" })
+        @Html.ValidationMessageFor(m => m.PointList.Points)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.PointList.Remark)
+        @Html.TextBoxFor(m => m.PointList.Remark, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.PointList.Remark)
+    </div>
+    <button id="add" type="submit" class="btn btn-primary">登録する</button>
+}
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#PointList_PointItemId").change(function () {
+                var pointId = $("#PointList_PointItemId").val();
+                if (pointId !== null) {
+                    var url = "/api/pointItem/" + pointId;
+                    console.log(url);
+                    $.ajax({
+                        url: url,
+                        dataType: "json",
+                        contentType: "application/json; charset=UTF-8",
+                        type: "GET"
+                    }).done(function (data) {
+                        $("#point").val(data["points"]);
+                    });
+                }
+
+            })
+        });
+    </script>
+}

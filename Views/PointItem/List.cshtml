@@ -1,0 +1,64 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ポイント項目一覧</h2>
+
+<p>@Html.ActionLink("登録する", "New", "PointItem", null, new { @class = "btn btn-primary btn-lg" })</p>
+
+<table id="pointItems" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>ポイント項目</th>
+            <th>ポイント数</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var loaddata = function () {
+                $.ajax({
+                    url: "/api/pointItem",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=UTF-8",
+                    acceptType: "application/json; charset=UTF-8"
+                }).done(function (data) {
+                    console.log(data);
+                    $.each(data, function (index, data) {
+                        $("tbody").append("<tr><td>"
+                            + data.name + "</td><td>"
+                            + data.points + "</td><td><button class = 'btn btn-outline-secondary js-delete'data-pointItem-id=" + data.id + "> 削除する</button></td></tr>"
+                        )
+                    });
+                }).fail(function (error) {
+                });
+            };
+            loaddata();
+
+            $("#pointItems").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("本当に削除しますか？", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/PointItem/" + button.attr("data-pointItem-id"),
+                            method: "DELETE",
+                            success: function () {
+                                button.parents("tr").remove();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>
+}
+

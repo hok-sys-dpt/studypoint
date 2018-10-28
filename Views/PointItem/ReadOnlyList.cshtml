@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ポイント項目一覧</h2>
+
+<table id="pointItems" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>ポイント項目</th>
+            <th>ポイント数</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var loaddata = function () {
+                $.ajax({
+                    url: "/api/pointItem",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=UTF-8",
+                    acceptType: "application/json; charset=UTF-8"
+                }).done(function (data) {
+                    console.log(data);
+                    $.each(data, function (index, data) {
+                        $("tbody").append("<tr><td>"
+                            + data.name + "</td><td>"
+                            + data.points + "</td></tr>"
+                        )
+                    });
+                }).fail(function (error) {
+                });
+            };
+            loaddata();
+        });
+    </script>
+}

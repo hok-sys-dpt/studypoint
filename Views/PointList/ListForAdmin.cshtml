@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ポイント履歴</h2>
+<p>@Html.ActionLink("登録する", "New", "PointList", null, new { @class = "btn btn-primary btn-lg" })</p>
+
+<table id="pointList" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>ポイント項目</th>
+            <th>ポイント数</th>
+            <th>ユーザー</th>
+            <th>備考</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#pointList").DataTable({
+                ajax: {
+                    url: "/api/pointList",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "dateAdded"
+                    },
+                    {
+                        data: "pointItemName"
+                    },
+                    {
+                        data: "points"
+                    },
+                    {
+                        data: "remark"
+                    },
+                    {
+                        data: "userName"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class = 'btn btn-outline-secondary js-delete' data-pointItem-id=" + data + ">削除する</button>";
+                        }
+                    }
+                ]
+            });
+
+            $("#pointList").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("本当に削除しますか？", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/PointList/" + button.attr("data-pointList-id"),
+                            method: "DELETE",
+                            success: function () {
+                                button.parents("tr").remove();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

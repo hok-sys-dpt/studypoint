@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewBag.Title = "IndexForAdmin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>最近のポイント一覧</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>日付</th>
+            <th>ユーザー</th>
+            <th>ポイント項目</th>
+            <th>ポイント数</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section scripts
+{
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/api/pointlist",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            acceptType: "application/json; charset=UTF-8"
+        }).done(function (data) {
+            var i = 0;
+            $.each(data, function (index, data) {
+                if (i > 14)
+                    return false;
+                else;
+                $("tbody").append("<tr><td>"
+                    + data.dateAdded + "</td><td>"
+                    + data.userName + "</td><td>"
+                    + data.pointItemName + "</td><td>"
+                    + data.points + "</td></tr>")
+                i++;
+            });
+        });
+    });
+
+</script>
+}

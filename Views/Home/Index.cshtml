@@ -1,0 +1,101 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="point-summary">
+    <div class="col-md-3 point-summary-content">
+        <p><span id="js-total-point" class="point-number-large"></span><span>  pt</span></p>
+        <h4>獲得ポイント</h4>
+    </div>
+    <div class="col-md-3 point-summary-content">
+        <p><span id="js-current-level" class="point-number-large"></span></p>
+        <h4>Level</h4>
+    </div>
+    <div class="col-md-3 point-summary-content">
+        <p><span id="js-point-tonextlevel" class="point-number-large"></span><span>  pt</span></p>
+        <h4>つぎのレベルまで</h4>
+    </div>
+</div>
+<div class="row" id="card-content">
+</div>
+
+@section scripts
+{
+<script>
+    $(document).ready(function(){
+        //ポイントサマリーを編集
+        var editPointSummary = function () {
+            $.ajax({
+                url: "/api/pointlist/getpointsummary",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                acceptType: "application/json; charset=UTF-8"
+            }).done(function (data) {
+                $("#js-total-point").text(data.totalPoints);
+                $("#js-current-level").text(data.level);
+                $("#js-point-tonextlevel").text(data.pointsToNextLevel);
+            });
+        };
+
+        //ポイントカードの編集
+        var editPointCards = function () {
+            $.ajax({
+                url: "/api/pointitem",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                acceptType: "application/json; charset=UTF-8"
+            }).done(function (data) {
+                $.each(data, function (index, data) {
+                    $("#card-content").append(
+                        "<div class='col-md-3 point-card js-post' data-pointItem-id=" + data.id + ">"
+                        + "<h4>" + data.name + "</h4>"
+                        + "<p class='lead'><span class='point-number'>"  + data.points + "</span> pt</p></div>"
+                    );
+                });
+            });
+        };
+
+        //ポイント登録イベント
+        $("#card-content").on("click", ".js-post", function () {
+            var button = $(this);
+            var data = {
+                pointItemId: button.attr("data-pointItem-id")
+            }
+            bootbox.confirm({
+                title: "登録しますか？",
+                message: button.find("h4").text() + button.find(".point-number").text(),
+                buttons: {
+                    cancel: {
+                        label: "<i class='fa fa-times'></i> キャンセル"
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> 登録する'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/pointlist/update",
+                            method: "POST",
+                            datatType: "json",
+                            data: JSON.stringify(data),
+                            contentType: "application/json; charset=UTF-8",
+                            acceptType: "application/json; charset=UTF-8",
+                            success: function () {
+                                editPointSummary();
+                                bootbox.alert("登録しました");
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        editPointSummary();
+        editPointCards();
+
+    });
+</script>
+    }

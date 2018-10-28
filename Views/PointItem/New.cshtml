@@ -1,0 +1,23 @@
+﻿@model StudyPoints.Models.PointItem
+
+@{
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ポイント項目登録</h2>
+
+@using (Html.BeginForm("Insert", "PointItem"))
+{
+    @Html.AntiForgeryToken();
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Points)
+        @Html.TextBoxFor(m => m.Points, new { @class = "form-control" })
+    </div>
+    @Html.HiddenFor(m => m.Id);
+    <button id="add" type="submit" class="btn btn-primary">登録する</button>
+}
